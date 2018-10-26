@@ -28,5 +28,10 @@ func main() {
 	}
 	defer db.Close()
 
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.Println("Connected to database successfully.")
 }
