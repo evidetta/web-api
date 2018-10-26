@@ -2,14 +2,24 @@
 DROP TABLE IF EXISTS users;
 
 ALTER DEFAULT PRIVILEGES
-    FOR USER readwrite
+    FOR ROLE postgres
     IN SCHEMA public
     REVOKE ALL ON TABLES FROM readwrite;
 
 ALTER DEFAULT PRIVILEGES
-    FOR USER readonly
+    FOR ROLE postgres
     IN SCHEMA public
     REVOKE ALL ON TABLES FROM readonly;
+
+ALTER DEFAULT PRIVILEGES
+    FOR ROLE postgres
+    IN SCHEMA public
+    REVOKE ALL ON SEQUENCES TO readwrite;
+
+ALTER DEFAULT PRIVILEGES
+    FOR ROLE postgres
+    IN SCHEMA public
+    REVOKE ALL ON SEQUENCES TO readonly;
 
 DROP USER readwrite;
 DROP USER readonly;

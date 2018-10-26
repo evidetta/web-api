@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"time"
 
 	_ "github.com/lib/pq"
 
 	"github.com/evidetta/db_migrations/config"
+	"github.com/evidetta/db_migrations/models"
 )
 
 func main() {
@@ -21,17 +23,24 @@ func main() {
 	log.Println("Configuration verified.")
 	log.Println("Attempting to connect to database...")
 
-	//127.0.0.1 readwrite password db disable
 	db, err := sql.Open("postgres", db_conf.GetConnectionString())
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
+	log.Println("Verifying database connection...")
 	err = db.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Println("Connected to database successfully.")
+
+	user, err := models.CreateUser(db, "Elia", "London", time.Date(1988, 9, 14, 0, 0, 0, 0, time.UTC))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(user)
 }

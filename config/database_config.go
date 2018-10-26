@@ -56,7 +56,7 @@ func NewDatabaseConfig(host, port, user, password, dbname, sslmode string) (*Dat
 func (db_conf *DatabaseConfig) GetConnectionString() string {
 	conf_str := fmt.Sprintf(
 		"host=%v port=%v user=%v password=%v dbname=%v sslmode=%v",
-		db_conf.Name,
+		db_conf.Host,
 		db_conf.Port,
 		db_conf.User,
 		db_conf.Password,
