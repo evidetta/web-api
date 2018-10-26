@@ -11,8 +11,8 @@ type DBModel interface {
 }
 
 type Model struct {
-	ID        int64
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time
+	ID        int64      `json:"id,omitempty"`
+	CreatedAt time.Time  `json:"-"`
+	UpdatedAt time.Time  `json:"-"`
+	DeletedAt *time.Time `json:"-"`
 }

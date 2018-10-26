@@ -7,17 +7,12 @@ import (
 
 type User struct {
 	Model
-	Name        string
-	Address     string
-	DateOfBirth time.Time
+	Name        string    `json:"name"`
+	Address     string    `json:"address"`
+	DateOfBirth time.Time `json:"date_of_birth"`
 }
 
-func CreateUser(db *sql.DB, name, address string, dob time.Time) (*User, error) {
-	user := User{
-		Name:        name,
-		Address:     address,
-		DateOfBirth: dob,
-	}
+func CreateUser(db *sql.DB, user *User) (*User, error) {
 
 	now := time.Now().UTC()
 	user.CreatedAt = now
@@ -38,7 +33,7 @@ func CreateUser(db *sql.DB, name, address string, dob time.Time) (*User, error) 
 		return nil, err
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 func GetUserById(db *sql.DB, id int64) (*User, error) {

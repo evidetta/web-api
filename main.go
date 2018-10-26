@@ -1,15 +1,18 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
 	"time"
 
-	_ "github.com/lib/pq"
-
 	"github.com/evidetta/db_migrations/config"
-	"github.com/evidetta/db_migrations/models"
+	"github.com/evidetta/db_migrations/handlers"
+	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -36,11 +39,43 @@ func main() {
 	}
 
 	log.Println("Connected to database successfully.")
+	log.Println("Setting up server...")
 
-	user, err := models.CreateUser(db, "Elia", "London", time.Date(1988, 9, 14, 0, 0, 0, 0, time.UTC))
-	if err != nil {
-		log.Fatal(err)
+	handlers.DB = db
+
+	r := mux.NewRouter()
+	r.HandleFunc("/user", handlers.CreateUser).Methods("POST")
+	r.HandleFunc("/user/{id:[0-9]+}", handlers.GetUser).Methods("GET")
+	r.HandleFunc("/user/{id:[0-9]+}", handlers.UpdateUser).Methods("PUT")
+	r.HandleFunc("/user/{id:[0-9]+}", handlers.DeleteUser).Methods("DELETE")
+
+	srv := &http.Server{
+		Addr: "0.0.0.0:8080",
+		// Good practice to set timeouts to avoid Slowloris attacks.
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		Handler:      r, // Pass our instance of gorilla/mux in.
 	}
 
-	log.Println(user)
+	log.Println("Server running.")
+
+	// Run our server in a goroutine so that it doesn't block.
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	<-c
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
+	srv.Shutdown(ctx)
+
+	log.Println("Shutting down...")
+	os.Exit(0)
 }
