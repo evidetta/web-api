@@ -19,15 +19,17 @@ func CreateUser(db *sql.DB, user *User) (*User, error) {
 	user.UpdatedAt = now
 	user.DeletedAt = nil
 
+	user.DateOfBirth = time.Date(user.DateOfBirth.Year(), user.DateOfBirth.Month(), user.DateOfBirth.Day(), 0, 0, 0, 0, time.UTC)
+
 	err := db.QueryRow(
-		"INSERT INTO users (name, address, date_of_birth, created_at, updated_at, deleted_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+		"INSERT INTO users (name, address, date_of_birth, created_at, updated_at, deleted_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING tag",
 		user.Name,
 		user.Address,
 		user.DateOfBirth,
 		user.CreatedAt,
 		user.UpdatedAt,
 		user.DeletedAt,
-	).Scan(&user.ID)
+	).Scan(&user.Tag)
 
 	if err != nil {
 		return nil, err
@@ -36,11 +38,11 @@ func CreateUser(db *sql.DB, user *User) (*User, error) {
 	return user, nil
 }
 
-func GetUserById(db *sql.DB, id int64) (*User, error) {
+func GetUserByTag(db *sql.DB, tag string) (*User, error) {
 	user := User{}
-	user.ID = id
+	user.Tag = tag
 
-	err := db.QueryRow("SELECT name, address, date_of_birth, created_at, updated_at, deleted_at FROM users WHERE id=$1 AND deleted_at IS NULL", user.ID).Scan(
+	err := db.QueryRow("SELECT name, address, date_of_birth, created_at, updated_at, deleted_at FROM users WHERE tag=$1 AND deleted_at IS NULL", user.Tag).Scan(
 		&user.Name,
 		&user.Address,
 		&user.DateOfBirth,
@@ -69,15 +71,17 @@ func (user *User) Update(db *sql.DB) error {
 	now := time.Now().UTC()
 	user.UpdatedAt = now
 
+	user.DateOfBirth = time.Date(user.DateOfBirth.Year(), user.DateOfBirth.Month(), user.DateOfBirth.Day(), 0, 0, 0, 0, time.UTC)
+
 	_, err = db.Exec(
-		"UPDATE users SET name=$1, address=$2, date_of_birth=$3, created_at=$4, updated_at=$5, deleted_at=$6 where id=$7",
+		"UPDATE users SET name=$1, address=$2, date_of_birth=$3, created_at=$4, updated_at=$5, deleted_at=$6 where tag=$7",
 		user.Name,
 		user.Address,
 		user.DateOfBirth,
 		user.CreatedAt,
 		user.UpdatedAt,
 		user.DeletedAt,
-		user.ID,
+		user.Tag,
 	)
 
 	if err != nil {
@@ -98,10 +102,10 @@ func (user *User) Delete(db *sql.DB) error {
 	user.DeletedAt = &now
 
 	_, err = db.Exec(
-		"UPDATE users SET updated_at=$1, deleted_at=$2 WHERE id=$3",
+		"UPDATE users SET updated_at=$1, deleted_at=$2 WHERE tag=$3",
 		user.UpdatedAt,
 		user.DeletedAt,
-		user.ID,
+		user.Tag,
 	)
 
 	if err != nil {
@@ -112,7 +116,7 @@ func (user *User) Delete(db *sql.DB) error {
 }
 
 func (user *User) checkForSoftDelete(db *sql.DB) error {
-	err := db.QueryRow("SELECT deleted_at FROM users WHERE id=$1", user.ID).Scan(
+	err := db.QueryRow("SELECT deleted_at FROM users WHERE tag=$1", user.Tag).Scan(
 		&user.DeletedAt,
 	)
 

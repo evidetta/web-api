@@ -1,6 +1,8 @@
 ---Drop the users table
 DROP TABLE IF EXISTS users;
 
+DROP FUNCTION generateTag ();
+
 ALTER DEFAULT PRIVILEGES
     FOR ROLE postgres
     IN SCHEMA public
@@ -14,12 +16,12 @@ ALTER DEFAULT PRIVILEGES
 ALTER DEFAULT PRIVILEGES
     FOR ROLE postgres
     IN SCHEMA public
-    REVOKE ALL ON SEQUENCES TO readwrite;
+    REVOKE ALL ON SEQUENCES FROM readwrite;
 
 ALTER DEFAULT PRIVILEGES
     FOR ROLE postgres
     IN SCHEMA public
-    REVOKE ALL ON SEQUENCES TO readonly;
+    REVOKE ALL ON SEQUENCES FROM readonly;
 
 DROP USER readwrite;
 DROP USER readonly;

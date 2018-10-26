@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
+	"time"
 
 	"github.com/evidetta/db_migrations/models"
-	"github.com/gorilla/mux"
 )
 
 var (
@@ -30,6 +29,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	u, err := models.CreateUser(DB, &user)
 	if err != nil {
+		log.Println(err)
 		respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
 		return
 	}
@@ -38,45 +38,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, ErrorInvalidParameter.Error())
-		return
-	}
-
-	user, err := models.GetUserById(DB, int64(id))
-	if err != nil {
-		if err == models.ErrorEntryNotFound {
-			respondWithError(w, http.StatusNotFound, ErrorObjectNotFound.Error())
-		} else {
-			respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
-		}
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, user)
-}
-
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, ErrorInvalidParameter.Error())
-		return
-	}
-
-	user, err := models.GetUserById(DB, int64(id))
-	if err != nil {
-		if err == models.ErrorEntryNotFound {
-			respondWithError(w, http.StatusNotFound, ErrorObjectNotFound.Error())
-		} else {
-			respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
-		}
-		return
-	}
+	var user models.User
 
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&user); err != nil {
@@ -85,28 +47,41 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	user.ID = int64(id)
-
-	err = user.Update(DB)
-	if err != nil {
-		log.Println(err)
-		respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
+	if user.Tag == "" {
+		respondWithError(w, http.StatusBadRequest, ErrorNoTagFound.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, user)
+	u, err := models.GetUserByTag(DB, user.Tag)
+	if err != nil {
+		if err == models.ErrorEntryNotFound {
+			respondWithError(w, http.StatusNotFound, ErrorObjectNotFound.Error())
+		} else {
+			log.Println(err)
+			respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
+		}
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, u)
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var user models.User
 
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, ErrorInvalidParameter.Error())
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&user); err != nil {
+		respondWithError(w, http.StatusBadRequest, ErrorInvalidPayload.Error())
+		return
+	}
+	defer r.Body.Close()
+
+	if user.Tag == "" {
+		respondWithError(w, http.StatusBadRequest, ErrorNoTagFound.Error())
 		return
 	}
 
-	user, err := models.GetUserById(DB, int64(id))
+	u, err := models.GetUserByTag(DB, user.Tag)
 	if err != nil {
 		if err == models.ErrorEntryNotFound {
 			respondWithError(w, http.StatusNotFound, ErrorObjectNotFound.Error())
@@ -116,9 +91,55 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.ID = int64(id)
+	if user.Name != "" {
+		u.Name = user.Name
+	}
 
-	err = user.Delete(DB)
+	if user.Address != "" {
+		u.Address = user.Address
+	}
+
+	emptyTime := time.Time{}
+	if user.DateOfBirth != emptyTime {
+		u.DateOfBirth = user.DateOfBirth
+	}
+
+	err = u.Update(DB)
+	if err != nil {
+		log.Println(err)
+		respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, u)
+}
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&user); err != nil {
+		respondWithError(w, http.StatusBadRequest, ErrorInvalidPayload.Error())
+		return
+	}
+	defer r.Body.Close()
+
+	if user.Tag == "" {
+		respondWithError(w, http.StatusBadRequest, ErrorNoTagFound.Error())
+		return
+	}
+
+	u, err := models.GetUserByTag(DB, user.Tag)
+	if err != nil {
+		if err == models.ErrorEntryNotFound {
+			respondWithError(w, http.StatusNotFound, ErrorObjectNotFound.Error())
+		} else {
+			respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
+		}
+		return
+	}
+
+	err = u.Delete(DB)
 	if err != nil {
 		log.Println(err)
 		respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
