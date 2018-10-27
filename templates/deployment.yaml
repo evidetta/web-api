@@ -27,37 +27,43 @@ spec:
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: database
-                  key: host
+                  name: {{ include "web-api.fullname" . }}
+                  key: db.host
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: database
-                  key: port
+                  name: {{ include "web-api.fullname" . }}
+                  key: db.port
             - name: DB_USER
               valueFrom:
                 configMapKeyRef:
-                  name: database
-                  key: user
+                  name: {{ include "web-api.fullname" . }}
+                  key: db.user
             - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: database
-                  key: name
+                  name: {{ include "web-api.fullname" . }}
+                  key: db.name
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "web-api.fullname" . }}
+                  key: db.password
             - name: DB_SSL_MODE
               valueFrom:
                 configMapKeyRef:
-                  name: database
-                  key: sslMode
+                  name: {{ include "web-api.fullname" . }}
+                  key: db.sslMode
             - name: API_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: api
-                  key: port
+                  name: {{ include "web-api.fullname" . }}
+                  key: api.port
             - name: API_PAGE_SIZE
+              valueFrom:
                 configMapKeyRef:
-                  name: api
-                  key: pageSize
+                  name: {{ include "web-api.fullname" . }}
+                  key: api.pageSize
           ports:
             - name: http
               containerPort: 8080

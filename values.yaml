@@ -16,6 +16,16 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+config:
+  db:
+      port: 5432
+      user: readwrite
+      name: db
+      sslMode: disable
+  api:
+      port: 8080
+      pageSize: 10
+
 service:
   type: ClusterIP
   port: 8080
@@ -32,8 +42,6 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
-postgresqlDatabase: db
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
