@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/evidetta/db_migrations/models"
+	"github.com/evidetta/web_api/models"
 )
 
 var (

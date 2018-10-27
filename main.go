@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/evidetta/db_migrations/config"
-	"github.com/evidetta/db_migrations/handlers"
+	"github.com/evidetta/web_api/config"
+	"github.com/evidetta/web_api/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )

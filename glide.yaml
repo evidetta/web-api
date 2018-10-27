@@ -1,4 +1,4 @@
-package: github.com/evidetta/db_migrations
+package: github.com/evidetta/web_api
 import:
 - package: github.com/lib/pq
   version: v1.0.0
