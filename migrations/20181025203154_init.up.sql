@@ -45,3 +45,6 @@ CREATE TABLE users(
   updated_at      TIMESTAMP WITH TIME ZONE NOT NULL,
   deleted_at      TIMESTAMP WITH TIME ZONE
 );
+
+--Create index on updated_at in the user table
+CREATE INDEX updated_at_idx ON users (updated_at);

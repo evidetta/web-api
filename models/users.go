@@ -38,6 +38,39 @@ func CreateUser(db *sql.DB, user *User) (*User, error) {
 	return user, nil
 }
 
+func GetUsers(db *sql.DB, pageSize, pageNumber int) ([]*User, error) {
+	users := []*User{}
+
+	limit := pageSize
+	offset := (pageNumber - 1) * pageSize
+	rows, err := db.Query("SELECT tag, name, address, date_of_birth, created_at, updated_at, deleted_at FROM users WHERE deleted_at IS NULL ORDER BY created_at LIMIT $1 OFFSET $2", limit, offset)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		user := User{}
+		err = rows.Scan(
+			&user.Tag,
+			&user.Name,
+			&user.Address,
+			&user.DateOfBirth,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+			&user.DeletedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, &user)
+	}
+
+	return users, nil
+}
+
 func GetUserByTag(db *sql.DB, tag string) (*User, error) {
 	user := User{}
 	user.Tag = tag

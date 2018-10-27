@@ -41,9 +41,12 @@ func main() {
 	log.Println("Connected to database successfully.")
 	log.Println("Setting up server...")
 
-	handlers.DB = db
+	handlers.Init(db, 10)
 
 	r := mux.NewRouter()
+	r.HandleFunc("/users", handlers.GetUsers).Methods("GET").Queries("page", "{page}")
+	r.HandleFunc("/users", handlers.GetUsers).Methods("GET")
+
 	r.HandleFunc("/user", handlers.CreateUser).Methods("POST")
 	r.HandleFunc("/user", handlers.GetUser).Methods("GET")
 	r.HandleFunc("/user", handlers.UpdateUser).Methods("PUT")

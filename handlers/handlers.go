@@ -5,16 +5,23 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/evidetta/db_migrations/models"
 )
 
 var (
-	DB *sql.DB
+	DB       *sql.DB
+	PageSize int
 )
 
 type EmptyStruct struct {
+}
+
+func Init(db *sql.DB, pageSize int) {
+	DB = db
+	PageSize = pageSize
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +42,27 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, u)
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	page := 1
+	if r.FormValue("page") != "" {
+		page, err = strconv.Atoi(r.FormValue("page"))
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, ErrorInvalidPayload.Error())
+			return
+		}
+	}
+
+	users, err := models.GetUsers(DB, PageSize, page)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, ErrorInternalServerError.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, users)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
