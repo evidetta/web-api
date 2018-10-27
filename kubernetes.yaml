@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-api
+spec:
+  selector:
+    matchLabels:
+      app: web-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web-api
+    spec:
+      containers:
+      - name: web-api
+        image: minikube/web-api:latest
+        env:
+          - name: DB_HOST
+            value: postgres-db-postgresql.default.svc.cluster.local
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_USER
+            value: readwrite
+          - name: DB_PASSWORD
+            value: password
+          - name: DB_NAME
+            value: db
+          - name: DB_SSL_MODE
+            value: require
+          - name: API_PORT
+            value: "8080"
+          - name: API_PAGE_SIZE
+            value: "10"
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Never

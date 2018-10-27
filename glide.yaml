@@ -1,4 +1,4 @@
-package: github.com/evidetta/web_api
+package: github.com/evidetta/web-api
 import:
 - package: github.com/lib/pq
   version: v1.0.0
