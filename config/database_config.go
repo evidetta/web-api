@@ -17,28 +17,28 @@ type DatabaseConfig struct {
 func NewDatabaseConfig(host, port, user, password, dbname, sslmode string) (*DatabaseConfig, error) {
 
 	if len(host) == 0 {
-		return nil, ErrorHostUnspecified
+		return nil, ErrorDBHostUnspecified
 	}
 
 	p, err := strconv.Atoi(port)
 	if err != nil {
-		return nil, ErrorInvalidPort
+		return nil, ErrorDBPortInvalid
 	}
 
 	if len(user) == 0 {
-		return nil, ErrorUserUnspecified
+		return nil, ErrorDBUserUnspecified
 	}
 
 	if len(password) == 0 {
-		return nil, ErrorPasswordUnspecified
+		return nil, ErrorDBPasswordUnspecified
 	}
 
 	if len(dbname) == 0 {
-		return nil, ErrorNameUnspecified
+		return nil, ErrorDBNameUnspecified
 	}
 
 	if len(sslmode) == 0 {
-		return nil, ErrorSSLModeUnspecified
+		return nil, ErrorDBSSLModeUnspecified
 	}
 
 	db_conf := &DatabaseConfig{

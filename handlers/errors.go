@@ -9,4 +9,5 @@ var (
 	ErrorInvalidPayload      = e.New("The payload was invalid.")
 	ErrorInternalServerError = e.New("There was an internal server error.")
 	ErrorObjectNotFound      = e.New("The object cannot be found.")
+	ErrorInvalidEndpoint     = e.New("The endpoint is invalid.")
 )

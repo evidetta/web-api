@@ -177,6 +177,10 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, EmptyStruct{})
 }
 
+func NotFound(w http.ResponseWriter, r *http.Request) {
+	respondWithError(w, http.StatusNotFound, ErrorInvalidEndpoint.Error())
+}
+
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	respondWithJSON(w, code, map[string]string{"error": message})
 }

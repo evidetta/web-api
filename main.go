@@ -23,6 +23,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	api_conf, err := config.NewAPIConfig(os.Getenv("API_PORT"), os.Getenv("API_PAGE_SIZE"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.Println("Configuration verified.")
 	log.Println("Attempting to connect to database...")
 
@@ -41,7 +46,7 @@ func main() {
 	log.Println("Connected to database successfully.")
 	log.Println("Setting up server...")
 
-	handlers.Init(db, 10)
+	handlers.Init(db, api_conf.PageSize)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/users", handlers.GetUsers).Methods("GET").Queries("page", "{page}")
@@ -52,8 +57,10 @@ func main() {
 	r.HandleFunc("/user", handlers.UpdateUser).Methods("PUT")
 	r.HandleFunc("/user", handlers.DeleteUser).Methods("DELETE")
 
+	r.NotFoundHandler = http.HandlerFunc(handlers.NotFound)
+
 	srv := &http.Server{
-		Addr: "0.0.0.0:8080",
+		Addr: api_conf.GetAPIAddress(),
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
