@@ -13,6 +13,9 @@ import (
 	"github.com/evidetta/web-api/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+
+	"github.com/golang-migrate/migrate"
+	"github.com/golang-migrate/migrate/database/postgres"
 )
 
 func main() {
@@ -23,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	api_conf, err := config.NewAPIConfig(os.Getenv("API_PORT"), os.Getenv("API_PAGE_SIZE"))
+	api_conf, err := config.NewAPIConfig(os.Getenv("API_PORT"), os.Getenv("API_PAGE_SIZE"), os.Getenv("API_RUN_MIGRATIONS"), os.Getenv("API_MIGRATIONS_DIR"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,8 +47,29 @@ func main() {
 	}
 
 	log.Println("Connected to database successfully.")
-	log.Println("Setting up server...")
 
+	if api_conf.RunMigrations == true {
+		log.Println("Running migrations")
+
+		driver, err := postgres.WithInstance(db, &postgres.Config{})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		m, err := migrate.NewWithDatabaseInstance("file:///migrations", "postgres", driver)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = m.Up()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println("Migrations run successfully.")
+	}
+
+	log.Println("Setting up server...")
 	handlers.Init(db, api_conf.PageSize)
 
 	r := mux.NewRouter()

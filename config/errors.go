@@ -12,6 +12,7 @@ var (
 	ErrorDBNameUnspecified     = e.New("DB Config: DB name has not been specified.")
 	ErrorDBSSLModeUnspecified  = e.New("DB Config: SSL mode has not been specified.")
 
-	ErrorAPIPortInvalid     = e.New("API Config: Port is invalid.")
-	ErrorAPIPageSizeInvalid = e.New("API Config: Page size is invalid.")
+	ErrorAPIPortInvalid          = e.New("API Config: Port is invalid.")
+	ErrorAPIPageSizeInvalid      = e.New("API Config: Page size is invalid.")
+	ErrorAPIMigrationFlagInvalid = e.New("API Config: Migration flag is invalid.")
 )

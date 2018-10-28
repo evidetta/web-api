@@ -2,7 +2,8 @@ REPO_PREFIX=minikube
 SERVICE_NAME=web-api
 VERSION=latest
 
-BINDIR=./bin
+MIGRATIONDIR=migrations
+BINDIR=bin
 
 GC=go build
 GC_OPTS=-o $(BINDIR)/$(SERVICE_NAME)
@@ -12,10 +13,11 @@ CC_OPTS=-t $(REPO_PREFIX)/$(SERVICE_NAME):$(VERSION) ./
 all: compile containerize
 
 compile:
-	mkdir -p $(BINDIR)
+	mkdir -pv $(BINDIR)
 	$(GC) $(GC_OPTS)
 
 containerize:
+	cp -rv $(MIGRATIONDIR) $(BINDIR)
 	$(CC) $(CC_OPTS)
 
 clean:

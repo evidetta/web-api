@@ -1,8 +1,16 @@
-hash: 2bf8a3dca7cf13ef858b67d514b939836ee23127ec599eda63eae3e36003cd02
-updated: 2018-10-26T14:11:16.966199171+01:00
+hash: ae6c9592159f77430e9e95a4aa173c2033ac7922083d4ac137725f0455444276
+updated: 2018-10-28T10:59:36.57667352Z
 imports:
+- name: github.com/golang-migrate/migrate
+  version: 4937cd088f7c7193ee59b319c1c2caa7482aae8e
+  subpackages:
+  - database
+  - database/postgres
+  - source
+- name: github.com/gorilla/context
+  version: 51ce91d2eaddeca0ef29a71d766bb3634dadf729
 - name: github.com/gorilla/mux
-  version: 521ea7b17d02faf8d3afea6737573942ceac59c5
+  version: e3702bed27f0d39777b0b37b664b6280e8ef8fbf
 - name: github.com/lib/pq
   version: 4ded0e9383f75c197b3a2aaa6d590ac52df6fd79
   subpackages:

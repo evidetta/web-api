@@ -6,11 +6,12 @@ import (
 )
 
 type APIConfig struct {
-	Port     int
-	PageSize int
+	Port          int
+	PageSize      int
+	RunMigrations bool
 }
 
-func NewAPIConfig(port, pageSize string) (*APIConfig, error) {
+func NewAPIConfig(port, pageSize, runMigrations, migrationsDir string) (*APIConfig, error) {
 	p, err := strconv.Atoi(port)
 	if err != nil {
 		return nil, ErrorAPIPortInvalid
@@ -21,9 +22,16 @@ func NewAPIConfig(port, pageSize string) (*APIConfig, error) {
 		return nil, ErrorAPIPageSizeInvalid
 	}
 
+	m := false
+
+	if runMigrations == "true" {
+		m = true
+	}
+
 	api_conf := APIConfig{
-		Port:     p,
-		PageSize: ps,
+		Port:          p,
+		PageSize:      ps,
+		RunMigrations: m,
 	}
 
 	return &api_conf, nil
