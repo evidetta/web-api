@@ -16,12 +16,25 @@ var (
 	PageSize int
 )
 
+type LivelinessMsg struct {
+	Ping string `json:"ping"`
+}
+
 type EmptyStruct struct {
 }
 
 func Init(db *sql.DB, pageSize int) {
 	DB = db
 	PageSize = pageSize
+}
+
+func Ping(w http.ResponseWriter, r *http.Request) {
+	msg := LivelinessMsg{
+		Ping: "pong",
+	}
+
+	respondWithJSON(w, http.StatusOK, msg)
+	return
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {

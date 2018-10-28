@@ -16,6 +16,7 @@ import (
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/source/file"
 )
 
 func main() {
@@ -49,7 +50,7 @@ func main() {
 	log.Println("Connected to database successfully.")
 
 	if api_conf.RunMigrations == true {
-		log.Println("Running migrations")
+		log.Println("Running migrations...")
 
 		driver, err := postgres.WithInstance(db, &postgres.Config{})
 		if err != nil {
@@ -62,7 +63,7 @@ func main() {
 		}
 
 		err = m.Up()
-		if err != nil {
+		if err != nil && err != migrate.ErrNoChange {
 			log.Fatal(err)
 		}
 
@@ -73,6 +74,8 @@ func main() {
 	handlers.Init(db, api_conf.PageSize)
 
 	r := mux.NewRouter()
+	r.HandleFunc("/ping", handlers.Ping).Methods("GET")
+
 	r.HandleFunc("/users", handlers.GetUsers).Methods("GET").Queries("page", "{page}")
 	r.HandleFunc("/users", handlers.GetUsers).Methods("GET")
 

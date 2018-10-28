@@ -1,24 +1,3 @@
----Grant default privileges
-ALTER DEFAULT PRIVILEGES
-    FOR ROLE postgres
-    IN SCHEMA public
-    GRANT SELECT, INSERT, UPDATE ON TABLES TO readwrite;
-
-ALTER DEFAULT PRIVILEGES
-    FOR ROLE postgres
-    IN SCHEMA public
-    GRANT SELECT ON TABLES TO readonly;
-
-ALTER DEFAULT PRIVILEGES
-    FOR ROLE postgres
-    IN SCHEMA public
-    GRANT USAGE, SELECT ON SEQUENCES TO readwrite;
-
-ALTER DEFAULT PRIVILEGES
-    FOR ROLE postgres
-    IN SCHEMA public
-    GRANT SELECT ON SEQUENCES TO readonly;
-
 --Create random key generative function.
 CREATE OR REPLACE FUNCTION generateTag ()
 RETURNS TEXT AS $tag$
