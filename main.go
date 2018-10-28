@@ -26,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	api_conf, err := config.NewAPIConfig(os.Getenv("API_PORT"), os.Getenv("API_PAGE_SIZE"), os.Getenv("API_RUN_MIGRATIONS"), os.Getenv("API_MIGRATIONS_DIR"))
+	api_conf, err := config.NewAPIConfig(os.Getenv("API_PORT"), os.Getenv("API_PAGE_SIZE"), os.Getenv("API_RUN_MIGRATIONS"))
 	if err != nil {
 		log.Fatal(err)
 	}

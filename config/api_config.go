@@ -11,7 +11,7 @@ type APIConfig struct {
 	RunMigrations bool
 }
 
-func NewAPIConfig(port, pageSize, runMigrations, migrationsDir string) (*APIConfig, error) {
+func NewAPIConfig(port, pageSize, runMigrations string) (*APIConfig, error) {
 	p, err := strconv.Atoi(port)
 	if err != nil {
 		return nil, ErrorAPIPortInvalid
