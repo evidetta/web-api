@@ -25,6 +25,3 @@ ALTER DEFAULT PRIVILEGES
     FOR ROLE postgres
     IN SCHEMA public
     REVOKE ALL ON SEQUENCES FROM readonly;
-
-DROP USER readwrite;
-DROP USER readonly;

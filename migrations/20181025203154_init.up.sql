@@ -1,7 +1,3 @@
----Create two database users
-CREATE ROLE readwrite LOGIN ENCRYPTED PASSWORD 'password';
-CREATE ROLE readonly LOGIN ENCRYPTED PASSWORD 'password';
-
 ---Grant default privileges
 ALTER DEFAULT PRIVILEGES
     FOR ROLE postgres
